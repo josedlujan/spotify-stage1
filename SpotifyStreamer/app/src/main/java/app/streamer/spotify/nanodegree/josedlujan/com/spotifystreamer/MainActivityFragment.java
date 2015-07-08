@@ -30,9 +30,9 @@ public class MainActivityFragment extends Fragment {
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     EditText editText;
-    ListView listView;
+    ListView listView,myListView;
     SearchArtistTask myCurrentTask;
-    List<Artist> myArtists;
+    List<Artist> myArtists,myArtistsP;
     ProgressBar pb;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +51,7 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    searchArtist();
+                searchArtist();
             }
 
             @Override
@@ -63,9 +63,21 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+    public void onDestroy(){
+        super.onDestroy();
+    }
 
+    public void onPause(){
+        super.onPause();
+        getFragmentManager().findFragmentByTag("fragment_main");
+    }
 
-    public void searchArtist(){
+    public   void onResume(){
+        super.onResume();
+        getFragmentManager().findFragmentByTag("fragment_main");
+    }
+
+        public void searchArtist(){
 
       myCurrentTask= new SearchArtistTask();
       myCurrentTask.execute(editText.getText().toString());
@@ -109,6 +121,14 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Artist> artists) {
             super.onPostExecute(artists);
+
+            if(artists == null)
+                Toast.makeText(getActivity().getApplicationContext(),R.string.artist_search_network,Toast.LENGTH_SHORT).show();
+
+            if((artists.size() == 0) && (editText.getText().length()>0))
+                Toast.makeText(getActivity().getApplicationContext(),R.string.artist_search,Toast.LENGTH_SHORT).show();
+
+
             myArtists = artists;
             fillListView();
         }
@@ -130,8 +150,5 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-
-    }
-
-
+   }
 }

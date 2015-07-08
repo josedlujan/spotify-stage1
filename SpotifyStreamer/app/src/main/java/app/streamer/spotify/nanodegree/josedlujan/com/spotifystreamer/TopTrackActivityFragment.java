@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,17 +41,21 @@ public class TopTrackActivityFragment extends Fragment {
 
         listView = (ListView)rootView.findViewById(R.id.listtoptrack);
         id =  getActivity().getIntent().getStringExtra("id");
-
+        searchTopTracks();
         return rootView;
 
     }
 
     public void onResume(){
         super.onResume();
-        searchTopTracks();
+
+        getFragmentManager().findFragmentByTag("fragment_toptrack");
     }
 
-
+    public void onPause(){
+        super.onPause();
+        getFragmentManager().findFragmentByTag("fragment_toptrack");
+    }
 
     public void searchTopTracks(){
         myCurrentTask = new SearchTopTracks();
@@ -81,6 +86,14 @@ public class TopTrackActivityFragment extends Fragment {
 
         protected  void onPostExecute(List<Track> trackList){
             super.onPostExecute(trackList);
+            if(trackList == null){
+                Toast.makeText(getActivity().getApplicationContext(), R.string.toptrack_search_network, Toast.LENGTH_SHORT).show();
+            }
+
+            if(trackList.size() == 0)
+                Toast.makeText(getActivity().getApplicationContext(),R.string.toptrack_search,Toast.LENGTH_SHORT).show();
+
+
             myTopTrackList = trackList;
             fillTopTracks();
         }
@@ -94,5 +107,7 @@ public class TopTrackActivityFragment extends Fragment {
 
 
     }
+
+
 }
 
